@@ -1,5 +1,9 @@
 import { extend } from "@mini-vue/shared";
 
+/** 全局变量，存储当前的Effect的fn */
+let activeEffect;
+let shouldTrack = false;
+
 class ReactiveEffect {
   private _fn: any;
   public scheduler: Function | undefined;
@@ -11,6 +15,11 @@ class ReactiveEffect {
     // this.scheduler = scheduler;
   }
   run() {
+    // 执行 fn  但是不收集依赖
+    if (!this.active) {
+      return this._fn();
+    }
+
     /** 可以开始收集依赖 */
     activeEffect = this;
     shouldTrack = true;
@@ -38,6 +47,8 @@ function cleanupEffect(effect) {
   effect.deps.forEach((dep) => {
     dep.delete(effect);
   });
+  /** 清空 effect.deps 数组*/
+  effect.deps.length = 0;
 }
 
 const targetMap = new Map();
@@ -81,10 +92,6 @@ export function trigger(target, key) {
     }
   }
 }
-
-/** 全局变量，存储当前的Effect的fn */
-let activeEffect;
-let shouldTrack = false;
 
 export function effect(fn, options: any = {}) {
   // const _effect = new ReactiveEffect(fn, options.scheduler);
