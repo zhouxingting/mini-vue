@@ -74,9 +74,15 @@ export function track(target, key) {
     deps = new Set();
     depsMap.set(key, deps);
   }
-  deps.add(activeEffect);
-  /** 存储当前收集的依赖 */
-  activeEffect?.deps.push(deps);
+  trackEffects(deps);
+}
+
+export function trackEffects(deps) {
+  if (!deps.has(activeEffect)) {
+    deps.add(activeEffect);
+    /** 存储当前收集的依赖 */
+    activeEffect?.deps.push(deps);
+  }
 }
 
 /** 执行依赖 */
@@ -84,7 +90,11 @@ export function trigger(target, key) {
   const depsMap = targetMap.get(target);
   const deps = depsMap.get(key);
   if (!depsMap || !deps) return;
-  for (let effect of deps) {
+  triggerEffects(deps);
+}
+
+export function triggerEffects(dep) {
+  for (let effect of dep) {
     if (effect.scheduler) {
       effect.scheduler();
     } else {
