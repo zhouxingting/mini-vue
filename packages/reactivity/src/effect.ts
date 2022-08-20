@@ -4,7 +4,7 @@ import { extend } from "@mini-vue/shared";
 let activeEffect;
 let shouldTrack = false;
 
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: any;
   public scheduler: Function | undefined;
   deps = [];
@@ -12,7 +12,7 @@ class ReactiveEffect {
   onStop: any;
   constructor(fn, scheduler?) {
     this._fn = fn;
-    // this.scheduler = scheduler;
+    this.scheduler = scheduler;
   }
   run() {
     // 执行 fn  但是不收集依赖
@@ -88,6 +88,9 @@ export function trackEffects(deps) {
 /** 执行依赖 */
 export function trigger(target, key) {
   const depsMap = targetMap.get(target);
+
+  if (!depsMap) return;
+
   const deps = depsMap.get(key);
   if (!depsMap || !deps) return;
   triggerEffects(deps);
