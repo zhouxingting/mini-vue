@@ -27,12 +27,20 @@ export function createVNode(type, props?, children?) {
   return vnode;
 }
 
+// 用 symbol 作为唯一标识
+export const Text = Symbol("Text");
+export const Fragment = Symbol("Fragment");
+
 function getShapFlag(type) {
   if (typeof type === "string") {
     return ShapeFlags.ELEMENT;
   } else {
     return ShapeFlags.STATEFUL_COMPONENT;
   }
+}
+
+export function createTextVNode(text: string = " ") {
+  return createVNode(Text, {}, text);
 }
 
 export function normalizeChildren(vnode, children) {

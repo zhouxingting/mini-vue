@@ -1,5 +1,6 @@
-import { isObject, isOn, ShapeFlags } from "@mini-vue/shared";
+import { isOn, ShapeFlags } from "@mini-vue/shared";
 import { createComponentInstance, setupComponent } from "./component";
+import { Fragment, Text } from "./vnode";
 
 export function createRenderer(vnode, container) {
   //   const { vnode, container } = options;
@@ -8,15 +9,33 @@ export function createRenderer(vnode, container) {
 }
 
 function patch(vnode, container) {
-  const { shapeFlag } = vnode;
+  const { shapeFlag, type } = vnode;
 
-  // TODO 处理element
-  if (shapeFlag & ShapeFlags.ELEMENT) {
-    processElement(vnode, container);
-  } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-    // 处理组件
-    processComponent(vnode, container);
+  switch (type) {
+    case Text:
+      processText(vnode, container);
+      break;
+    case Fragment:
+      processFragment(vnode, container);
+      break;
+    default:
+      // TODO 处理element
+      if (shapeFlag & ShapeFlags.ELEMENT) {
+        processElement(vnode, container);
+      } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+        // 处理组件
+        processComponent(vnode, container);
+      }
   }
+}
+
+function processText(vnode: any, container: any) {
+  const el = (vnode.el = document.createTextNode(vnode.children));
+  container.append(el);
+}
+
+function processFragment(vnode, container) {
+  mountChildren(vnode.children, container);
 }
 
 function processElement(vnode, container) {
