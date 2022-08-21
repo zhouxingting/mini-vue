@@ -25,14 +25,17 @@ export function provide(key, value) {
 export function inject(key, defaultValue) {
   const currentInstance = getCurrentInstance();
 
-  let { provides } = currentInstance;
-  if (provides[key]) {
-    return provides[key];
-  } else if (defaultValue) {
-    if (typeof defaultValue === "function") {
-      return defaultValue();
-    } else {
-      return defaultValue;
+  if (currentInstance) {
+    let provides = currentInstance.parent?.provides;
+
+    if (provides[key]) {
+      return provides[key];
+    } else if (defaultValue) {
+      if (typeof defaultValue === "function") {
+        return defaultValue();
+      } else {
+        return defaultValue;
+      }
     }
   }
 }
