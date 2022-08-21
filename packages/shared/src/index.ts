@@ -9,3 +9,6 @@ export const isObject = (val) => {
 export function hasChanged(value, oldValue) {
   return !Object.is(value, oldValue);
 }
+
+// 必须是 on+一个大写字母的格式开头
+export const isOn = (key) => /^on[A-Z]/.test(key);

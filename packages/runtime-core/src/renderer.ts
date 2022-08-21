@@ -1,4 +1,4 @@
-import { isObject, ShapeFlags } from "@mini-vue/shared";
+import { isObject, isOn, ShapeFlags } from "@mini-vue/shared";
 import { createComponentInstance, setupComponent } from "./component";
 
 export function createRenderer(vnode, container) {
@@ -33,7 +33,13 @@ function processElement(vnode, container) {
   }
   const { props } = vnode;
   for (const key in props) {
-    el.setAttribute(key, props[key]);
+    const val = props[key];
+    if (isOn(key)) {
+      const eventName = key.slice(2).toLowerCase();
+      el.addEventListener(eventName, val);
+    } else {
+      el.setAttribute(key, val);
+    }
   }
 
   container.append(el);
