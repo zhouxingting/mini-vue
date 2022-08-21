@@ -8,8 +8,6 @@ export function createRenderer(vnode, container) {
 }
 
 function patch(vnode, container) {
-  console.log(vnode.type);
-
   const { shapeFlag } = vnode;
 
   // TODO 处理element

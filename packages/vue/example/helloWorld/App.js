@@ -1,15 +1,18 @@
 import { h, ref } from "../../dist/mini-vue.esm-bundler.js";
 
-const count = ref(0);
+const count = ref(66);
 
-window.self = null
+window.self = null;
 
 const HelloWorld = {
   name: "HelloWorld",
-  setup() {
+  setup(props) {
+    console.log("props", props);
+    props.count++;
+
     return {
-      value: 44
-    }
+      value: 44,
+    };
   },
   // TODO 第一个小目标
   // 可以在使用 template 只需要有一个插值表达式即
@@ -23,8 +26,13 @@ const HelloWorld = {
     // console.log('window.self', window.self, this.$el)
     return h(
       "div",
-      { tId: "helloWorld" },
-      `hello world: count:${count.value} - ${this.value}`
+      {
+        tId: "helloWorld",
+        onClick: () => {
+          console.log("click");
+        },
+      },
+      `hello world: count:${count.value} - ${this.value} - ${this.count}`
     );
   },
 };
@@ -35,6 +43,9 @@ export default {
 
   render() {
     window.self = this;
-    return h("div", { tId: 1 }, [h("p", {}, "主页"), h(HelloWorld)]);
+    return h("div", { tId: 1 }, [
+      h("p", {}, "主页"),
+      h(HelloWorld, { count: 555 }),
+    ]);
   },
 };

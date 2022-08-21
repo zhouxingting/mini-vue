@@ -1,3 +1,5 @@
+import { shallowReadonly } from "@mini-vue/reactivity";
+import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 
 export function createComponentInstance(vnode, parent?) {
@@ -17,6 +19,10 @@ export function createComponentInstance(vnode, parent?) {
 }
 
 export function setupComponent(instance) {
+  const { props } = instance.vnode;
+  // 1. 处理 props
+  initProps(instance, props);
+  //TODO 2. 处理 slots
   setupStatefulComponent(instance);
 }
 
@@ -30,7 +36,7 @@ function setupStatefulComponent(instance) {
   const { setup } = component;
 
   if (setup) {
-    const setupResult = setup();
+    const setupResult = setup(shallowReadonly(instance.props));
 
     handleSetupResule(instance, setupResult);
   }
