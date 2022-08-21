@@ -1,4 +1,4 @@
-import { isObject } from "@mini-vue/shared";
+import { isObject, ShapeFlags } from "@mini-vue/shared";
 import { createComponentInstance, setupComponent } from "./component";
 
 export function createRenderer(vnode, container) {
@@ -9,21 +9,26 @@ export function createRenderer(vnode, container) {
 
 function patch(vnode, container) {
   console.log(vnode.type);
+
+  const { shapeFlag } = vnode;
+
   // TODO 处理element
-  if (typeof vnode.type === "string") {
+  if (shapeFlag & ShapeFlags.ELEMENT) {
     processElement(vnode, container);
-  } else {
+  } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
     // 处理组件
     processComponent(vnode, container);
   }
 }
 
 function processElement(vnode, container) {
+  const { shapeFlag } = vnode;
+
   const el = (vnode.el = document.createElement(vnode.type));
 
-  if (Array.isArray(vnode.children)) {
+  if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
     mountChildren(vnode.children, el);
-  } else {
+  } else if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     el.innerText = vnode.children;
   }
   const { props } = vnode;
