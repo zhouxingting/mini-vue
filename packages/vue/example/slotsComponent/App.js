@@ -1,9 +1,16 @@
-import { h, ref, reactive } from "../../dist/mini-vue.esm-bundler.js";
+import {
+  h,
+  ref,
+  reactive,
+  getCurrentInstance,
+} from "../../dist/mini-vue.esm-bundler.js";
 import Child from "./Child.js";
 
 export default {
   name: "App",
-  setup() {},
+  setup() {
+    console.log(getCurrentInstance());
+  },
 
   render() {
     return h("div", {}, [

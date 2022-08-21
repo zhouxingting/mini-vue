@@ -43,8 +43,14 @@ function setupStatefulComponent(instance) {
   const { setup } = component;
 
   if (setup) {
+    // 设置当前 currentInstance 的值
+    // 必须要在调用 setup 之前
+    setCurrentInstance(instance);
+
     const setupContext = createSetupContext(instance);
     const setupResult = setup(shallowReadonly(instance.props), setupContext);
+
+    setCurrentInstance(null);
 
     handleSetupResule(instance, setupResult);
   }
@@ -70,4 +76,14 @@ function finishComponentSetup(instance: any) {
   if (component.render) {
     instance.render = component.render;
   }
+}
+
+/** 获取当前实例 */
+let currentInstance = null;
+
+export function getCurrentInstance(): any {
+  return currentInstance;
+}
+export function setCurrentInstance(instance) {
+  currentInstance = instance;
 }
