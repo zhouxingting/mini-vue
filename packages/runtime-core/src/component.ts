@@ -1,4 +1,5 @@
 import { shallowReadonly } from "@mini-vue/reactivity";
+import { emit } from "./componentEmits";
 import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
 
@@ -7,6 +8,7 @@ export function createComponentInstance(vnode, parent?) {
     type: vnode.type,
     vnode,
     ctx: {}, // context 对象
+    emit: () => {},
   };
 
   // 在 prod 坏境下的 ctx 只是下面简单的结构
@@ -14,6 +16,8 @@ export function createComponentInstance(vnode, parent?) {
   instance.ctx = {
     _: instance,
   };
+
+  instance.emit = emit.bind(null, instance) as any;
 
   return instance;
 }
@@ -36,10 +40,17 @@ function setupStatefulComponent(instance) {
   const { setup } = component;
 
   if (setup) {
-    const setupResult = setup(shallowReadonly(instance.props));
+    const setupContext = createSetupContext(instance);
+    const setupResult = setup(shallowReadonly(instance.props), setupContext);
 
     handleSetupResule(instance, setupResult);
   }
+}
+
+function createSetupContext(instance) {
+  return {
+    emit: instance.emit,
+  };
 }
 
 function handleSetupResule(instance: any, setupResult: any) {
