@@ -2,6 +2,7 @@ import { shallowReadonly } from "@mini-vue/reactivity";
 import { emit } from "./componentEmits";
 import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
+import { initSlots } from "./componentSlo";
 
 export function createComponentInstance(vnode, parent?) {
   const instance = {
@@ -9,6 +10,7 @@ export function createComponentInstance(vnode, parent?) {
     vnode,
     ctx: {}, // context 对象
     emit: () => {},
+    slots: {}, // 存放插槽的数据
   };
 
   // 在 prod 坏境下的 ctx 只是下面简单的结构
@@ -23,10 +25,11 @@ export function createComponentInstance(vnode, parent?) {
 }
 
 export function setupComponent(instance) {
-  const { props } = instance.vnode;
+  const { props, children } = instance.vnode;
   // 1. 处理 props
   initProps(instance, props);
   //TODO 2. 处理 slots
+  initSlots(instance, children);
   setupStatefulComponent(instance);
 }
 

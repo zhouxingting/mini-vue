@@ -22,6 +22,8 @@ export function createVNode(type, props?, children?) {
     vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN;
   }
 
+  normalizeChildren(vnode, children);
+
   return vnode;
 }
 
@@ -30,5 +32,14 @@ function getShapFlag(type) {
     return ShapeFlags.ELEMENT;
   } else {
     return ShapeFlags.STATEFUL_COMPONENT;
+  }
+}
+
+export function normalizeChildren(vnode, children) {
+  if (typeof children === "object") {
+    // 所以我们这里除了 element ，那么只要是 component 的话，那么children 肯定就是 slots 了
+    if (!(vnode.shapeFlag & ShapeFlags.ELEMENT)) {
+      vnode.shapeFlag |= ShapeFlags.SLOTS_CHILDREN;
+    }
   }
 }
