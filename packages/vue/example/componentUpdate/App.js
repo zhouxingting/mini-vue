@@ -18,19 +18,23 @@ export default {
   },
 
   render() {
-    return h("div", {}, [
-      createTextVNode(`这是通过 createTextVNode 创建的节点${this.msg}`),
-      h("div", {}, `你好${this.msg}`),
-      h(
-        "button",
-        {
-          onClick: this.changeChildProps,
-        },
-        "change child props"
-      ),
-      h(Child, {
+    return h(
+      "div",
+      {
         msg: this.msg,
-      }),
-    ]);
+      },
+      [
+        createTextVNode(`这是通过 createTextVNode 创建的节点${this.msg}`),
+        h("div", {}, `你好${this.msg}`),
+        h(
+          "button",
+          {
+            onClick: this.changeChildProps,
+          },
+          "change child props"
+        ),
+        h(Child),
+      ]
+    );
   },
 };

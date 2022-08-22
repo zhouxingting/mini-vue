@@ -13,12 +13,16 @@ export function setElementText(el, text) {
   el.innerText = text;
 }
 
-export function patchProp(el, key, val) {
+export function patchProp(el, key, preValue, nextValue) {
   if (isOn(key)) {
     const eventName = key.slice(2).toLowerCase();
-    el.addEventListener(eventName, val);
+    el.addEventListener(eventName, nextValue);
   } else {
-    el.setAttribute(key, val);
+    if (nextValue === undefined || nextValue === null) {
+      el.removeAttribute(key);
+    } else {
+      el.setAttribute(key, nextValue);
+    }
   }
 }
 

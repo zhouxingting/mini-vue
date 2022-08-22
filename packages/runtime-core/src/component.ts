@@ -11,6 +11,7 @@ export function createComponentInstance(vnode, parent) {
     ctx: {}, // context 对象
     emit: () => {},
     slots: {}, // 存放插槽的数据，
+    props: {},
     parent,
     // 是否是初始化
     isMounted: false,
@@ -31,7 +32,7 @@ export function createComponentInstance(vnode, parent) {
 
 export function setupComponent(instance) {
   const { props, children } = instance.vnode;
-  // 1. 处理 props
+  // 1. 处理 props vnode.props => instance.props
   initProps(instance, props);
   //TODO 2. 处理 slots
   initSlots(instance, children);
