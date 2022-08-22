@@ -32,7 +32,7 @@ const HelloWorld = {
           console.log("click");
         },
       },
-      `hello world: count:${count.value} - ${this.value} - ${this.count}`
+      `hello world: count:${count} - ${this.value} - ${this.count}`
     );
   },
 };

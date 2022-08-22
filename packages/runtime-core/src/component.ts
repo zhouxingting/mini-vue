@@ -1,4 +1,4 @@
-import { shallowReadonly } from "@mini-vue/reactivity";
+import { proxyRefs, shallowReadonly } from "@mini-vue/reactivity";
 import { emit } from "./componentEmits";
 import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
@@ -12,6 +12,8 @@ export function createComponentInstance(vnode, parent) {
     emit: () => {},
     slots: {}, // 存放插槽的数据，
     parent,
+    // 是否是初始化
+    isMounted: false,
     //  获取 parent 的 provides 作为当前组件的初始化值 这样就可以继承 parent.provides 的属性了
     provides: parent ? parent.provides : {},
   };
@@ -67,7 +69,7 @@ function createSetupContext(instance) {
 
 function handleSetupResule(instance: any, setupResult: any) {
   if (typeof setupResult === "object") {
-    instance.setupState = setupResult;
+    instance.setupState = proxyRefs(setupResult);
   }
 
   finishComponentSetup(instance);

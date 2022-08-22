@@ -17,6 +17,9 @@ export const PublicInstanceProxyHandlers = {
       }
     }
     const publicGetter = publicPropertiesMap[key];
-    return publicGetter(instance);
+
+    if (publicGetter) {
+      return publicGetter(instance);
+    }
   },
 };
