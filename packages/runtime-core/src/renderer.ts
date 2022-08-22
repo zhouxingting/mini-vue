@@ -65,8 +65,6 @@ export function createRenderer(options) {
   }
 
   function updateElement(n1, n2, container, parentComponent) {
-    console.log("n1", n1);
-    console.log("n2", n2);
     const oldProps = (n1 && n1.props) || {};
     const newProps = n2.props || {};
 
@@ -75,6 +73,9 @@ export function createRenderer(options) {
 
     // 对比 props
     patchProp(el, oldProps, newProps);
+
+    // 对比 children
+    patchChildren(n1, n2, container, parentComponent);
   }
 
   function patchProp(el, oldProps, newProps) {
@@ -97,6 +98,34 @@ export function createRenderer(options) {
       if (!(key in newProps)) {
         hostPatchProp(el, key, oldProps[key], null);
       }
+    }
+  }
+
+  function patchChildren(n1, n2, container, parentComponent) {
+    const { shapeFlag: prevShapeFlag, children: c1 } = n1;
+    const { shapeFlag, children: c2 } = n2;
+
+    if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+      if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        // 清空老的children
+        unmountChildren(c1);
+      }
+      if (c1 !== c2) {
+        // 设置新的text
+        hostSetElementText(container, c2);
+      }
+    } else {
+      if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+        hostSetElementText(container, "");
+        mountChildren(c2, container, parentComponent);
+      }
+    }
+  }
+
+  function unmountChildren(children) {
+    for (let i = 0; i < children.length; i++) {
+      const el = children[i].el;
+      hostRemove(el, el.parentNode);
     }
   }
 

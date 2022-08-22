@@ -30,6 +30,11 @@ export function insert(child, parent) {
   parent.append(child);
 }
 
+/** 移除 */
+export function remove(child, parent) {
+  parent.removeChild(child);
+}
+
 // 缓存
 let renderer;
 
@@ -42,6 +47,7 @@ function ensureRenderer() {
       setElementText,
       patchProp,
       insert,
+      remove,
     }))
   );
 }
