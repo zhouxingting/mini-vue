@@ -26,13 +26,17 @@ export function patchProp(el, key, preValue, nextValue) {
   }
 }
 
-export function insert(child, parent) {
-  parent.append(child);
+export function insert(child, parent, anchor = null) {
+  console.log("Insert");
+  parent.insertBefore(child, anchor);
 }
 
 /** 移除 */
-export function remove(child, parent) {
-  parent.removeChild(child);
+export function remove(child) {
+  const parent = child.parentNode;
+  if (parent) {
+    parent.removeChild(child);
+  }
 }
 
 // 缓存

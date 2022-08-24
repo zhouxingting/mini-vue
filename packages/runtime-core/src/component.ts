@@ -12,6 +12,7 @@ export function createComponentInstance(vnode, parent) {
     emit: () => {},
     slots: {}, // 存放插槽的数据，
     props: {},
+    /** 存储parent 是为了获取 parent.provides的数据 */
     parent,
     // 是否是初始化
     isMounted: false,

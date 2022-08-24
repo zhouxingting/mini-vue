@@ -104,7 +104,7 @@ window.isChange = isChange;
 //   h("p", { key: "A" }, "A"),
 //   h("p", { key: "B" }, "B"),
 //   h("p", { key: "E" }, "E"),
-//   h("p", { key: "C", id:"c-next" }, "C"),
+//   h("p", { key: "C", id: "c-next" }, "C"),
 //   h("p", { key: "F" }, "F"),
 //   h("p", { key: "G" }, "G"),
 // ];
@@ -213,10 +213,11 @@ export default {
   name: "PatchChildren",
   setup() {},
   render() {
-    console.log(isChange.value);
-    return isChange.value === true
-      ? h("div", {}, "这是通过 createTextVNode 创建的节点")
-      : h("div", {}, nextChildren);
+    return h(
+      "children",
+      {},
+      isChange.value === true ? nextChildren : prevChildren
+    );
     // return h("div", {}, [
     //   h(
     //     "button",
@@ -227,7 +228,7 @@ export default {
     //     },
     //     "测试子组件之间的 patch 逻辑"
     //   ),
-    //   h("children", {}, isChange.value === true ? prevChildren : prevChildren),
+    //   h("children", {}, isChange.value === true ? nextChildren : prevChildren),
     // ]);
   },
 };
