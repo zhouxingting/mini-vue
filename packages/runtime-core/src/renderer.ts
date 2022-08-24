@@ -81,7 +81,7 @@ export function createRenderer(options) {
     patchProp(el, oldProps, newProps);
 
     // 对比 children
-    patchChildren(n1, n2, container, anchor, parentComponent);
+    patchChildren(n1, n2, el, anchor, parentComponent);
   }
 
   function patchProp(el, oldProps, newProps) {
