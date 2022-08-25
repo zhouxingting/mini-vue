@@ -8,6 +8,7 @@ export function createComponentInstance(vnode, parent) {
   const instance = {
     type: vnode.type,
     vnode,
+    next: null, // 需要更新的 vnode，用于更新 component 类型的组件
     ctx: {}, // context 对象
     emit: () => {},
     slots: {}, // 存放插槽的数据，
@@ -18,6 +19,7 @@ export function createComponentInstance(vnode, parent) {
     isMounted: false,
     //  获取 parent 的 provides 作为当前组件的初始化值 这样就可以继承 parent.provides 的属性了
     provides: parent ? parent.provides : {},
+    setupState: {}, // 存储 setup 的返回值
   };
 
   // 在 prod 坏境下的 ctx 只是下面简单的结构

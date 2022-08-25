@@ -1,6 +1,7 @@
 import { effect } from "@mini-vue/reactivity";
 import { ShapeFlags } from "@mini-vue/shared";
 import { createComponentInstance, setupComponent } from "./component";
+import { shouldUpdateComponent } from "./componentRenderUtils";
 import { createAppAPI } from "./createApp";
 import { Fragment, Text } from "./vnode";
 
@@ -57,8 +58,30 @@ export function createRenderer(options) {
   }
 
   function processComponent(n1, n2, container, parentComponent) {
-    // 挂载实例
-    mountComponent(n2, container, parentComponent);
+    if (!n1) {
+      // 挂载实例
+      mountComponent(n2, container, parentComponent);
+    } else {
+      // 更新组件
+      updateComponent(n1, n2, container);
+    }
+  }
+
+  // 组件的更新
+  function updateComponent(n1, n2, container) {
+    // 更新组件实例引用
+    const instance = (n2.component = n1.component);
+    // 判断组件是否应该更新
+    if (shouldUpdateComponent(n1, n2)) {
+      // 那么 next 就是新的 vnode 了（也就是 n2）
+      instance.next = n2;
+      // 重新调用更新逻辑
+      instance.update();
+    } else {
+      n2.component = n1.component;
+      n2.el = n1.el;
+      instance.vnode = n2.vnode;
+    }
   }
 
   function processElement(n1, n2, container, anchor, parentComponent) {
@@ -364,7 +387,10 @@ export function createRenderer(options) {
   }
 
   function mountComponent(initialVNode, container, parentComponent) {
-    const instance = createComponentInstance(initialVNode, parentComponent);
+    const instance = (initialVNode.component = createComponentInstance(
+      initialVNode,
+      parentComponent
+    ));
     /** 给instance对象创建一个proxy代理对象 */
     setupComponent(instance);
 
@@ -372,8 +398,8 @@ export function createRenderer(options) {
   }
 
   function setupRenderEffect(instance, initialVNode, container) {
-    /** 收集依赖 */
-    effect(() => {
+    // 触发依赖
+    function componentUpdateFn() {
       if (!instance.isMounted) {
         const { proxy } = instance;
         const subTree = (instance.subTree = instance.render.call(proxy));
@@ -387,6 +413,14 @@ export function createRenderer(options) {
         instance.isMounted = true;
       } else {
         /** 更新视图 */
+
+        const { next, vnode } = instance;
+
+        if (next) {
+          next.el = vnode.el;
+          updateComponentPreRender(instance, next);
+        }
+
         const { proxy } = instance;
         const subTree = instance.render.call(proxy);
         const prevTree = instance.subTree;
@@ -394,13 +428,28 @@ export function createRenderer(options) {
 
         patch(prevTree, subTree, prevTree.el, null, instance);
       }
-    });
+    }
+    /** 收集依赖 */
+    instance.update = effect(componentUpdateFn);
   }
 
   return {
     render: render,
     createApp: createAppAPI(render),
   };
+}
+
+function updateComponentPreRender(instance, nextVNode) {
+  // 更新 nextVNode 的组件实例
+  // 现在 instance.vnode 是组件实例更新前的
+  // 所以之前的 props 就是基于 instance.vnode.props 来获取
+  // 接着需要更新 vnode ，方便下一次更新的时候获取到正确的值
+  nextVNode.component = instance;
+  instance.vnode = nextVNode;
+  instance.next = null;
+
+  const { props } = nextVNode;
+  instance.props = props;
 }
 
 /** 求最长子序列 */
