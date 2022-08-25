@@ -3,6 +3,7 @@ import { ShapeFlags } from "@mini-vue/shared";
 import { createComponentInstance, setupComponent } from "./component";
 import { shouldUpdateComponent } from "./componentRenderUtils";
 import { createAppAPI } from "./createApp";
+import { queueJob } from "./scheduler";
 import { Fragment, Text } from "./vnode";
 
 export function createRenderer(options) {
@@ -413,7 +414,7 @@ export function createRenderer(options) {
         instance.isMounted = true;
       } else {
         /** 更新视图 */
-
+        console.log("更新");
         const { next, vnode } = instance;
 
         if (next) {
@@ -430,7 +431,13 @@ export function createRenderer(options) {
       }
     }
     /** 收集依赖 */
-    instance.update = effect(componentUpdateFn);
+    instance.update = effect(componentUpdateFn, {
+      scheduler: () => {
+        // 把 effect 推到微任务的时候在执行
+        // queueJob(effect);
+        queueJob(instance.update);
+      },
+    });
   }
 
   return {
