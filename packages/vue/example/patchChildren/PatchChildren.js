@@ -213,22 +213,17 @@ export default {
   name: "PatchChildren",
   setup() {},
   render() {
-    return h(
-      "children",
-      {},
-      isChange.value === true ? nextChildren : prevChildren
-    );
-    // return h("div", {}, [
-    //   h(
-    //     "button",
-    //     {
-    //       onClick: () => {
-    //         isChange.value = !isChange.value;
-    //       },
-    //     },
-    //     "测试子组件之间的 patch 逻辑"
-    //   ),
-    //   h("children", {}, isChange.value === true ? nextChildren : prevChildren),
-    // ]);
+    return h("div", {}, [
+      h(
+        "button",
+        {
+          onClick: () => {
+            isChange.value = !isChange.value;
+          },
+        },
+        "测试子组件之间的 patch 逻辑"
+      ),
+      h("children", {}, isChange.value === true ? nextChildren : prevChildren),
+    ]);
   },
 };

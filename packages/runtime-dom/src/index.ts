@@ -28,7 +28,7 @@ export function patchProp(el, key, preValue, nextValue) {
       const eventName = key.slice(2).toLowerCase();
       if (nextValue) {
         const invoker = (invokers[key] = nextValue);
-        el.addEventListener(eventName, nextValue);
+        el.addEventListener(eventName, invoker);
       } else {
         el.removeEventListener(eventName, existingInvoker);
         invokers[key] = undefined;

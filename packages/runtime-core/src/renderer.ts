@@ -101,8 +101,13 @@ export function createRenderer(options) {
     // 这种情况下我们就应该以 oldProps 作为基准，因为在 newProps 里面是没有的 tId 的
     // 还需要注意一点，如果这个 key 在 newProps 里面已经存在了，说明已经处理过了，就不要在处理了
     for (let key in oldProps) {
+      const prevProp = oldProps[key];
+      const nextProp = null;
       if (!(key in newProps)) {
-        hostPatchProp(el, key, oldProps[key], null);
+        // 这里是以 oldProps 为基准来遍历，
+        // 而且得到的值是 newProps 内没有的
+        // 所以交给 host 更新的时候，把新的值设置为 null
+        hostPatchProp(el, key, prevProp, nextProp);
       }
     }
   }
