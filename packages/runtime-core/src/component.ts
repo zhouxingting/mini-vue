@@ -72,6 +72,11 @@ function createSetupContext(instance) {
 function handleSetupResule(instance: any, setupResult: any) {
   if (typeof setupResult === "object") {
     instance.setupState = proxyRefs(setupResult);
+  } else if (typeof setupResult === "function") {
+    // 如果返回的是 function 的话，那么绑定到 render 上
+    // 认为是 render 逻辑
+    // setup(){ return ()=>(h("div")) }
+    instance.render = setupResult;
   }
 
   finishComponentSetup(instance);

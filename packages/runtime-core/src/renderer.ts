@@ -154,9 +154,9 @@ export function createRenderer(options) {
 
       /** 找到不相等的范围就跳出while循环 */
       if (!isSameVnodeType(prevChild, nextChild)) {
-        console.log("两个 child 不相等(从左往右比对)");
-        console.log(`prevChild:${prevChild}`);
-        console.log(`nextChild:${nextChild}`);
+        // console.log("两个 child 不相等(从左往右比对)");
+        // console.log(`prevChild:${prevChild}`);
+        // console.log(`nextChild:${nextChild}`);
         break;
       }
       patch(prevChild, nextChild, container, parentAnchor, parentComponent);
@@ -168,9 +168,9 @@ export function createRenderer(options) {
       const prevChild = c1[e1];
       const nextChild = c2[e2];
       if (!isSameVnodeType(prevChild, nextChild)) {
-        console.log("两个 child 不相等(从右往左比对)");
-        console.log(`prevChild:${prevChild}`);
-        console.log(`nextChild:${nextChild}`);
+        // console.log("两个 child 不相等(从右往左比对)");
+        // console.log(`prevChild:${prevChild}`);
+        // console.log(`nextChild:${nextChild}`);
         break;
       }
       patch(prevChild, nextChild, container, parentAnchor, parentComponent);
@@ -190,7 +190,7 @@ export function createRenderer(options) {
       const nextPos = e2 + 1;
       const anchor = nextPos < l2 ? c2[nextPos].el : parentAnchor;
       while (i <= e2) {
-        console.log(`需要新创建一个 vnode: ${c2[i].key}`);
+        // console.log(`需要新创建一个 vnode: ${c2[i].key}`);
         patch(null, c2[i], container, anchor, parentComponent);
         i++;
       }
@@ -198,7 +198,7 @@ export function createRenderer(options) {
       // 这种情况的话说明新节点的数量是小于旧节点的数量的
       // 那么我们就需要把多余的删除
       while (i <= e1) {
-        console.log(`需要删除当前的 vnode: ${c1[i].key}`);
+        // console.log(`需要删除当前的 vnode: ${c1[i].key}`);
         hostRemove(c1[i].el);
         i++;
       }
@@ -258,7 +258,7 @@ export function createRenderer(options) {
           hostRemove(prevChild.el);
         } else {
           // 新老节点都存在
-          console.log("新老节点都存在");
+          // console.log("新老节点都存在");
           // 把新节点的索引和老的节点的索引建立映射关系
           // i + 1 是因为 i 有可能是0 (0 的话会被认为新节点在老的节点中不存在)
           newIndexToOldIndexMap[newIndex - s2] = i + 1;

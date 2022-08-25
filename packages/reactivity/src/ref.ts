@@ -3,11 +3,15 @@ import { isTracking, trackEffects, triggerEffects } from "./effect";
 import { reactive } from "./reactive";
 
 export class RefImpl {
+  private _rawValue: any;
   private _value: any;
   dep: Set<unknown>;
   public __v_isRef = true;
 
   constructor(value) {
+    this._rawValue = value;
+    // 看看value 是不是一个对象，如果是一个对象的话
+    // 那么需要用 reactive 包裹一下
     this._value = convert(value);
     this.dep = new Set();
   }
@@ -17,10 +21,11 @@ export class RefImpl {
     trackRefValue(this);
     return this._value;
   }
-  set value(value) {
+  set value(newValue) {
     /** 触发依赖 */
-    if (hasChanged(value, this._value)) {
-      this._value = convert(value);
+    if (hasChanged(newValue, this._rawValue)) {
+      this._value = convert(newValue);
+      this._rawValue = newValue;
 
       triggerRefValue(this);
     }

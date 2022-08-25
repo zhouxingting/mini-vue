@@ -14,9 +14,26 @@ export function setElementText(el, text) {
 }
 
 export function patchProp(el, key, preValue, nextValue) {
+  // preValue 之前的值
+  // 为了之后 update 做准备的值
+  // nextValue 当前的值
   if (isOn(key)) {
-    const eventName = key.slice(2).toLowerCase();
-    el.addEventListener(eventName, nextValue);
+    const invokers = el._vei || (el._vei = {});
+    const existingInvoker = invokers[key];
+
+    if (nextValue && existingInvoker) {
+      // 直接修改函数的值即可
+      existingInvoker.value = nextValue;
+    } else {
+      const eventName = key.slice(2).toLowerCase();
+      if (nextValue) {
+        const invoker = (invokers[key] = nextValue);
+        el.addEventListener(eventName, nextValue);
+      } else {
+        el.removeEventListener(eventName, existingInvoker);
+        invokers[key] = undefined;
+      }
+    }
   } else {
     if (nextValue === undefined || nextValue === null) {
       el.removeAttribute(key);
@@ -27,7 +44,7 @@ export function patchProp(el, key, preValue, nextValue) {
 }
 
 export function insert(child, parent, anchor = null) {
-  console.log("Insert");
+  // console.log("Insert");
   parent.insertBefore(child, anchor);
 }
 
