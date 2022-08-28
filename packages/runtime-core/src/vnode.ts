@@ -1,5 +1,7 @@
 import { ShapeFlags } from "@mini-vue/shared";
 
+export { createVNode as createElementVNode };
+
 export function createVNode(type, props?, children?) {
   // 注意 type 有可能是 string 也有可能是对象
   // 如果是对象的话，那么就是用户设置的 options

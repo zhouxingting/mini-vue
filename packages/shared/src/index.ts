@@ -1,4 +1,5 @@
 export * from "../src/shapeFlags";
+export * from "../src/toDisplayString";
 
 export const extend = Object.assign;
 

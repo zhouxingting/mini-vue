@@ -85,10 +85,19 @@ function handleSetupResule(instance: any, setupResult: any) {
 }
 
 function finishComponentSetup(instance: any) {
-  const component = instance.type;
+  const Component = instance.type;
 
-  if (component.render) {
-    instance.render = component.render;
+  if (!instance.render) {
+    // 如果 compile 有值 并且当组件没有 render 函数，那么就需要把 template 编译成 render 函数
+    if (compile && !Component.render) {
+      if (Component.template) {
+        // 这里就是 runtime 模块和 compile 模块结合点
+        const template = Component.template;
+        Component.render = compile(template);
+      }
+    }
+
+    instance.render = Component.render;
   }
 }
 
@@ -100,4 +109,9 @@ export function getCurrentInstance(): any {
 }
 export function setCurrentInstance(instance) {
   currentInstance = instance;
+}
+
+let compile;
+export function registerRuntimeCompiler(_compile) {
+  compile = _compile;
 }
