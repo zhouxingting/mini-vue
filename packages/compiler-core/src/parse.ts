@@ -39,9 +39,37 @@ function parseChildren(context, ancestors) {
     }
   }
 
+  if (!node) {
+    node = parseText(context);
+  }
+
   nodes.push(node);
 
   return nodes;
+}
+
+function parseText(context): any {
+  console.log("解析 text", context);
+
+  // endIndex 应该看看有没有对应的 <
+  // 比如 hello</div>
+  // 像这种情况下 endIndex 就应该是在 o 这里
+  // {
+
+  const endTokens = ["<", "{{"];
+  let endIndex = context.source.length;
+  for (let i = 0; i < endTokens.length; i++) {
+    const index = context.source.indexOf(endTokens[i]);
+    if (index !== -1 && endIndex > index) {
+      endIndex = index;
+    }
+  }
+  const content = parseTextData(context, endIndex);
+
+  return {
+    type: NodeTypes.TEXT,
+    content,
+  };
 }
 
 function parseElement(context, ancestors) {

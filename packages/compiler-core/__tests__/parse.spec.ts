@@ -20,6 +20,16 @@ describe("parser", () => {
     });
   });
 
+  test("simple text with invalid end tag", () => {
+    const ast = baseParse("some text</div>");
+    const text = ast.children[0];
+
+    expect(text).toStrictEqual({
+      type: NodeTypes.TEXT,
+      content: "some text",
+    });
+  });
+
   describe("Element", () => {
     test("simple div", () => {
       const ast = baseParse("<div></div>");
