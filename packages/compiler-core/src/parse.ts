@@ -1,4 +1,9 @@
-import { NodeTypes } from "./ast";
+import { ElementTypes, NodeTypes } from "./ast";
+
+const enum TagType {
+  Start,
+  End,
+}
 
 export function baseParse(content: string) {
   const context = createParseContext(content);
@@ -21,11 +26,68 @@ function parseChildren(context, ancestors) {
   if (startsWith(s, "{{")) {
     // 看看如果是 {{ 开头的话，那么就是一个插值， 那么去解析他
     node = parseInterpolation(context);
+  } else if (s[0] === "<") {
+    if (s[1] === "/") {
+      // 这里属于 edge case 可以不用关心
+      // 处理结束标签
+      if (/[a-z]/i.test(s[2])) {
+        // 匹配 </div>
+        // 需要改变 context.source 的值 -> 也就是需要移动光标
+      }
+    } else if (/[a-z]/i.test(s[1])) {
+      node = parseElement(context, ancestors);
+    }
   }
 
   nodes.push(node);
 
   return nodes;
+}
+
+function parseElement(context, ancestors) {
+  // 应该如何解析 tag 呢
+  // <div></div>
+  // 先解析开始 tag
+
+  // const tag =  /^\/?([a-z])*/i.exec(context)
+  const element = parseTag(context, TagType.Start);
+
+  // 解析 end tag 是为了检测语法是不是正确的
+  // 检测是不是和 start tag 一致
+  if (startsWithEndTagOpen(context.source, element.tag)) {
+    parseTag(context, TagType.End);
+  } else {
+    throw new Error(`缺失结束标签：${element.tag}`);
+  }
+
+  return element;
+}
+
+function startsWithEndTagOpen(source: string, tag: string) {
+  // 1. 头部 是不是以  </ 开头的
+  // 2. 看看是不是和 tag 一样
+  return (
+    startsWith(source, "<") &&
+    source.slice(2, 2 + tag.length).toLowerCase() === tag.toLowerCase()
+  );
+}
+
+function parseTag(context: any, type: TagType): any {
+  const match: any = /^<\/?([a-z][^\r\n\t\f />]*)/i.exec(context.source);
+  const tag = match[1];
+  // 移动光标
+  // <div
+  advanceBy(context, match[0].length);
+  advanceBy(context, 1);
+  if (type === TagType.End) return;
+
+  const tagType = ElementTypes.ELEMENT;
+
+  return {
+    type: NodeTypes.ELEMENT,
+    tag,
+    tagType,
+  };
 }
 
 function parseInterpolation(context: any) {

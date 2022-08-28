@@ -1,4 +1,4 @@
-import { NodeTypes } from "../src/ast";
+import { ElementTypes, NodeTypes } from "../src/ast";
 import { baseParse } from "../src/parse";
 
 describe("parser", () => {
@@ -16,6 +16,25 @@ describe("parser", () => {
           type: NodeTypes.SIMPLE_EXPRESSION,
           content: "message",
         },
+      });
+    });
+  });
+
+  describe("Element", () => {
+    test("simple div", () => {
+      const ast = baseParse("<div></div>");
+      const element = ast.children[0];
+
+      expect(element).toStrictEqual({
+        type: NodeTypes.ELEMENT,
+        tag: "div",
+        tagType: ElementTypes.ELEMENT,
+        // children: [
+        //   {
+        //     type: NodeTypes.TEXT,
+        //     content: "hello",
+        //   },
+        // ],
       });
     });
   });

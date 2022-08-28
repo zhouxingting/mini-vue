@@ -6,3 +6,7 @@ export const enum NodeTypes {
   ELEMENT,
   COMPOUND_EXPRESSION,
 }
+
+export const enum ElementTypes {
+  ELEMENT,
+}
